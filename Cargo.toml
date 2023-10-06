@@ -1,0 +1,11 @@
+[package]
+name = "flow"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-trait = "0.1"
+futures = "0.3"
+
+[dev-dependencies]
+futures-timer = "3"
