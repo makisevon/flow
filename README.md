@@ -1,2 +1,3 @@
-# flow
-Flow is a simple DAG execution engine.
+# Flow
+
+Flow is a simple DAG workflow engine.
