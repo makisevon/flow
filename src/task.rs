@@ -4,10 +4,10 @@ use futures::future::Shared;
 
 #[async_trait]
 pub trait Task<I, D> {
-    fn id(&self) -> I;
+    fn id(&self) -> &I;
 
-    fn dependencies(&self) -> Vec<I> {
-        Vec::new()
+    fn dependencies(&self) -> &[I] {
+        &[]
     }
 
     async fn run(&self, input: Vec<Input<'_, I, D>>) -> Option<D>;

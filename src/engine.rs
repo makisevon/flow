@@ -61,7 +61,7 @@ where
             .collect();
 
         while let Some(node) = queue.pop_front() {
-            if let Some(task) = self.tasks.get(node).map(Arc::clone) {
+            if let Some(task) = self.tasks.get(node).cloned() {
                 let input = graph[node]
                     .in_neighbors
                     .iter()
@@ -123,20 +123,15 @@ where
     I: Eq + Hash,
 {
     pub fn exists_task(&self, task: &dyn Task<I, D>) -> bool {
-        self.exists_task_by_id(&task.id())
+        self.exists_task_by_id(task.id())
     }
 
     pub fn exists_task_by_id(&self, id: &I) -> bool {
         self.tasks.read().unwrap().contains_key(id)
     }
 
-    pub fn add_task(&self, task: BoxTask<I, D>) -> &Self {
-        self.tasks.write().unwrap().insert(task.id(), task);
-        self
-    }
-
     pub fn remove_task(&self, task: &dyn Task<I, D>) -> &Self {
-        self.remove_task_by_id(&task.id())
+        self.remove_task_by_id(task.id())
     }
 
     pub fn remove_task_by_id(&self, id: &I) -> &Self {
@@ -149,6 +144,11 @@ impl<I, D> EngineBuilder<I, D>
 where
     I: Clone + Eq + Hash,
 {
+    pub fn add_task(&self, task: BoxTask<I, D>) -> &Self {
+        self.tasks.write().unwrap().insert(task.id().clone(), task);
+        self
+    }
+
     pub fn build(self) -> Result<Engine<I, D>, Box<dyn Error>> {
         let tasks = Arc::into_inner(self.tasks).unwrap().into_inner().unwrap();
         let mut builder = Dag::builder();
@@ -158,7 +158,7 @@ where
         }
 
         for (id, task) in &tasks {
-            for dependency in task.dependencies() {
+            for dependency in task.dependencies().iter().cloned() {
                 builder.add_edge(Edge::new(dependency, id.clone()));
             }
         }
