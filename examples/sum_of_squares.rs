@@ -9,7 +9,6 @@ use flow::engine::Engine;
 use flow::task::Input;
 use flow::task::Task;
 use futures::executor;
-use futures::stream::FuturesOrdered;
 use futures::stream::FuturesUnordered;
 use futures::StreamExt;
 use futures_timer::Delay;
@@ -28,25 +27,28 @@ fn main() {
 
     let now = Instant::now();
     executor::block_on(engine.run(context.clone()));
-
     println!("elapsed = {:?}", now.elapsed());
-    println!(
-        "results = {:?}",
-        executor::block_on(async {
-            NUMBERS
-                .iter()
-                .copied()
-                .map(Square::id)
-                .chain(iter::once(Sum::id()))
-                .map(|id| async {
-                    let data = context.get(&id).unwrap();
-                    (id, data.await)
-                })
-                .collect::<FuturesOrdered<_>>()
-                .collect::<Vec<_>>()
-                .await
-        })
+
+    let ids: Vec<_> = NUMBERS
+        .iter()
+        .copied()
+        .map(Square::id)
+        .chain(iter::once(Sum::id()))
+        .collect();
+
+    let data: HashMap<_, _> = executor::block_on(
+        ids.iter()
+            .map(|id| {
+                let data = context.get(id).unwrap();
+                async move { (id, data.await.unwrap()) }
+            })
+            .collect::<FuturesUnordered<_>>()
+            .collect(),
     );
+
+    for id in &ids {
+        println!("{id} = {:?}", data[&id]);
+    }
 }
 
 struct Square {
