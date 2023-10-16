@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::collections::VecDeque;
-use std::error::Error;
 use std::hash::Hash;
 use std::sync::Arc;
 
@@ -121,7 +120,7 @@ impl<N> DagBuilder<N>
 where
     N: Eq + Hash,
 {
-    pub fn build(self) -> Result<Dag<N>, Box<dyn Error>> {
+    pub fn build(self) -> Result<Dag<N>, BuildDagError> {
         let graph = self.graph;
         let mut in_degrees: HashMap<_, _> = graph
             .iter()
@@ -145,7 +144,7 @@ where
         }
 
         if in_degrees.values().any(|&in_degree| in_degree > 0) {
-            Err("cycle detected")?
+            Err(DagErrorKind::Cycle)?
         }
 
         Ok(Dag {
@@ -164,4 +163,14 @@ impl<N> Edge<N> {
     pub fn new(from: N, to: N) -> Self {
         Self { from, to }
     }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
+#[error(transparent)]
+pub struct BuildDagError(#[from] DagErrorKind);
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
+enum DagErrorKind {
+    #[error("cycle detected in directed graph")]
+    Cycle,
 }

@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::collections::VecDeque;
-use std::error::Error;
 use std::hash::Hash;
 use std::sync::Arc;
 use std::sync::RwLock;
@@ -14,6 +13,7 @@ use crate::task::Input;
 use crate::task::Task;
 
 mod dag;
+use dag::BuildDagError;
 use dag::Dag;
 use dag::Edge;
 use dag::NodeData;
@@ -149,7 +149,7 @@ where
         self
     }
 
-    pub fn build(self) -> Result<Engine<I, D>, Box<dyn Error>> {
+    pub fn build(self) -> Result<Engine<I, D>, BuildEngineError> {
         let tasks = Arc::into_inner(self.tasks).unwrap().into_inner().unwrap();
         let mut builder = Dag::builder();
 
@@ -164,7 +164,7 @@ where
         }
 
         Ok(Engine {
-            dag: builder.build()?,
+            dag: builder.build().map_err(EngineErrorKind::DagBuildFailed)?,
             tasks: Arc::new(
                 tasks
                     .into_iter()
@@ -173,4 +173,14 @@ where
             ),
         })
     }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
+#[error(transparent)]
+pub struct BuildEngineError(#[from] EngineErrorKind);
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
+enum EngineErrorKind {
+    #[error("failed to build DAG")]
+    DagBuildFailed(#[from] BuildDagError),
 }
