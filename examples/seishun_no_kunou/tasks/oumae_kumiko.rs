@@ -1,0 +1,43 @@
+use std::time::Duration;
+
+use async_trait::async_trait;
+use flow::task::Input;
+use flow::task::Task;
+use futures_timer::Delay;
+
+use super::data::Data;
+
+pub struct OumaeKumiko {
+    id: String,
+}
+
+impl OumaeKumiko {
+    pub fn id() -> String {
+        "oumae-kumiko".into()
+    }
+
+    pub fn new() -> Self {
+        Self { id: Self::id() }
+    }
+}
+
+#[async_trait]
+impl Task<String, Data> for OumaeKumiko {
+    fn id(&self) -> &String {
+        &self.id
+    }
+
+    async fn run(&self, _: Vec<Input<'_, String, Data>>) -> Option<Data> {
+        Delay::new(Duration::from_secs(1)).await;
+        Some(Data::OumaeKumiko(Run::new()))
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct Run(String);
+
+impl Run {
+    fn new() -> Self {
+        Self("Umaku Naritai".into())
+    }
+}
