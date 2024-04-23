@@ -13,14 +13,14 @@ use super::kousaka_reina::Trumpet;
 use super::oumae_kumiko::Euphonium;
 use super::oumae_kumiko::OumaeKumiko;
 
-pub struct Daikichiyama {
+pub struct DaikichiYama {
     id: String,
     dependencies: Vec<String>,
 }
 
-impl Daikichiyama {
+impl DaikichiYama {
     pub fn id() -> String {
-        "daikichiyama".into()
+        "daikichi-yama".into()
     }
 
     pub fn new() -> Self {
@@ -32,7 +32,7 @@ impl Daikichiyama {
 }
 
 #[async_trait]
-impl Task<String, Arc<dyn Any + Send + Sync>> for Daikichiyama {
+impl Task<String, Arc<dyn Any + Send + Sync>> for DaikichiYama {
     fn id(&self) -> &String {
         &self.id
     }

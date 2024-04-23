@@ -8,8 +8,8 @@ use futures::stream::FuturesUnordered;
 use futures::StreamExt;
 
 mod tasks;
-use tasks::daikichiyama::Daikichiyama;
-use tasks::daikichiyama::Observatory;
+use tasks::daikichi_yama::DaikichiYama;
+use tasks::daikichi_yama::Observatory;
 use tasks::kousaka_reina::KousakaReina;
 use tasks::kousaka_reina::Trumpet;
 use tasks::oumae_kumiko::Euphonium;
@@ -20,7 +20,7 @@ fn main() {
     builder
         .add_task(Box::new(OumaeKumiko::new()))
         .add_task(Box::new(KousakaReina::new()))
-        .add_task(Box::new(Daikichiyama::new()));
+        .add_task(Box::new(DaikichiYama::new()));
 
     let engine = builder.build().unwrap();
     let context = Context::new();
@@ -31,10 +31,10 @@ fn main() {
 
     let oumae_kumiko = OumaeKumiko::id();
     let kousaka_reina = KousakaReina::id();
-    let daikichiyama = Daikichiyama::id();
+    let daikichi_yama = DaikichiYama::id();
 
     let data: HashMap<_, _> = executor::block_on(
-        vec![&oumae_kumiko, &kousaka_reina, &daikichiyama]
+        vec![&oumae_kumiko, &kousaka_reina, &daikichi_yama]
             .into_iter()
             .map(|id| {
                 let data = context.get(id).unwrap();
@@ -55,8 +55,8 @@ fn main() {
     );
 
     println!(
-        "{daikichiyama} = {:?}",
-        data[&daikichiyama]
+        "{daikichi_yama} = {:?}",
+        data[&daikichi_yama]
             .clone()
             .downcast::<Observatory>()
             .unwrap()
