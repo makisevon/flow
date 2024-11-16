@@ -13,9 +13,12 @@ fn main() {
         .add_task(Box::new(Void::from(3, vec![2])));
 
     let err = unsafe { builder.build().unwrap_err_unchecked() };
-    println!("err = {err:?}");
-    println!("error = {err}");
-    println!("source = {}", err.source().unwrap());
+
+    assert_eq!(format!("{err}"), "failed to build DAG");
+    assert_eq!(
+        format!("{}", err.source().unwrap()),
+        "cycle detected in directed graph"
+    );
 }
 
 struct Void {

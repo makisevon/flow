@@ -1,3 +1,4 @@
+use core::fmt;
 use std::any::Any;
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -70,11 +71,16 @@ impl Task<String, Arc<dyn Any + Send + Sync>> for DaikichiYama {
     }
 }
 
-#[derive(Debug)]
 pub struct Observatory(String);
 
 impl Observatory {
     fn new() -> Self {
         Self("Ai wo Mitsuketa Basho".into())
+    }
+}
+
+impl fmt::Display for Observatory {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }

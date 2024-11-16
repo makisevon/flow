@@ -1,3 +1,4 @@
+use std::fmt;
 use std::time::Duration;
 
 use async_trait::async_trait;
@@ -56,11 +57,17 @@ impl Task<String, Data> for UjiBashi {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Cry(String);
 
 impl Cry {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self("Jigoku no Orphee".into())
+    }
+}
+
+impl fmt::Display for Cry {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }

@@ -1,4 +1,5 @@
 use std::any::Any;
+use std::fmt;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -36,11 +37,16 @@ impl Task<String, Arc<dyn Any + Send + Sync>> for OumaeKumiko {
     }
 }
 
-#[derive(Debug)]
 pub struct Euphonium(());
 
 impl Euphonium {
     fn new() -> Self {
         Self(())
+    }
+}
+
+impl fmt::Display for Euphonium {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Euphonium")
     }
 }

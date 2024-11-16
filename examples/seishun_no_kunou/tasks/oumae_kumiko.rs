@@ -1,3 +1,4 @@
+use std::fmt;
 use std::time::Duration;
 
 use async_trait::async_trait;
@@ -33,11 +34,17 @@ impl Task<String, Data> for OumaeKumiko {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Run(String);
 
 impl Run {
     fn new() -> Self {
         Self("Umaku Naritai".into())
+    }
+}
+
+impl fmt::Display for Run {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }

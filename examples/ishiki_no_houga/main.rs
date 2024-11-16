@@ -27,7 +27,7 @@ fn main() {
 
     let now = Instant::now();
     executor::block_on(engine.run(context.clone()));
-    println!("elapsed = {:?}", now.elapsed());
+    assert_eq!(now.elapsed().as_secs(), 1);
 
     let oumae_kumiko = OumaeKumiko::id();
     let kousaka_reina = KousakaReina::id();
@@ -44,21 +44,30 @@ fn main() {
             .collect(),
     );
 
-    println!(
-        "{oumae_kumiko} = {:?}",
-        data[&oumae_kumiko].clone().downcast::<Euphonium>().unwrap()
+    assert_eq!(
+        format!(
+            "{}",
+            data[&oumae_kumiko].clone().downcast::<Euphonium>().unwrap()
+        ),
+        "Euphonium"
     );
 
-    println!(
-        "{kousaka_reina} = {:?}",
-        data[&kousaka_reina].clone().downcast::<Trumpet>().unwrap()
+    assert_eq!(
+        format!(
+            "{}",
+            data[&kousaka_reina].clone().downcast::<Trumpet>().unwrap()
+        ),
+        "Trumpet"
     );
 
-    println!(
-        "{daikichi_yama} = {:?}",
-        data[&daikichi_yama]
-            .clone()
-            .downcast::<Observatory>()
-            .unwrap()
+    assert_eq!(
+        format!(
+            "{}",
+            data[&daikichi_yama]
+                .clone()
+                .downcast::<Observatory>()
+                .unwrap()
+        ),
+        "Ai wo Mitsuketa Basho"
     );
 }

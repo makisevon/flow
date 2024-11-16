@@ -27,7 +27,7 @@ fn main() {
 
     let now = Instant::now();
     executor::block_on(engine.run(context.clone()));
-    println!("elapsed = {:?}", now.elapsed());
+    assert_eq!(now.elapsed().as_secs(), 3);
 
     let ids: Vec<_> = NUMBERS
         .iter()
@@ -46,8 +46,8 @@ fn main() {
             .collect(),
     );
 
-    for id in &ids {
-        println!("{id} = {:?}", data[&id]);
+    for (id, &number) in ids.iter().zip(NUMBERS) {
+        assert_eq!(data[id], number.pow(2));
     }
 }
 

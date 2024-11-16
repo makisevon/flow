@@ -22,7 +22,7 @@ fn main() {
 
     let now = Instant::now();
     executor::block_on(engine.run(context.clone()));
-    println!("elapsed = {:?}", now.elapsed());
+    assert_eq!(now.elapsed().as_secs(), 1);
 
     let oumae_kumiko = OumaeKumiko::id();
     let uji_bashi = UjiBashi::id();
@@ -38,13 +38,13 @@ fn main() {
             .collect(),
     );
 
-    println!(
-        "{oumae_kumiko} = {:?}",
-        data[&oumae_kumiko].clone().oumae_kumiko().unwrap()
+    assert_eq!(
+        format!("{}", data[&oumae_kumiko].clone().oumae_kumiko().unwrap()),
+        "Umaku Naritai"
     );
 
-    println!(
-        "{uji_bashi} = {:?}",
-        data[&uji_bashi].clone().uji_bashi().unwrap()
+    assert_eq!(
+        format!("{}", data[&uji_bashi].clone().uji_bashi().unwrap()),
+        "Jigoku no Orphee"
     );
 }
