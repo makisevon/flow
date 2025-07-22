@@ -3,10 +3,10 @@ use std::iter;
 use std::time::Duration;
 use std::time::Instant;
 
-use flow::context::Context;
-use flow::engine::Engine;
-use flow::task::Input;
-use flow::task::Task;
+use dag_flow::context::Context;
+use dag_flow::engine::Engine;
+use dag_flow::task::Input;
+use dag_flow::task::Task;
 use futures::StreamExt;
 use futures::executor;
 use futures::stream::FuturesUnordered;

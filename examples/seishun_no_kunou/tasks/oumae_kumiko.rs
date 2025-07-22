@@ -1,8 +1,8 @@
 use std::fmt;
 use std::time::Duration;
 
-use flow::task::Input;
-use flow::task::Task;
+use dag_flow::task::Input;
+use dag_flow::task::Task;
 use futures_timer::Delay;
 
 use super::data::Data;
