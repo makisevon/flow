@@ -22,8 +22,8 @@ impl OumaeKumiko {
 }
 
 impl Task<String, Data> for OumaeKumiko {
-    fn id(&self) -> &String {
-        &self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 
     async fn run(&self, _: Vec<Input<'_, String, Data>>) -> Option<Data> {

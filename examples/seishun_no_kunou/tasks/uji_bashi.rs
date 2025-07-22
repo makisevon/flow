@@ -28,12 +28,12 @@ impl UjiBashi {
 }
 
 impl Task<String, Data> for UjiBashi {
-    fn id(&self) -> &String {
-        &self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 
-    fn dependencies(&self) -> &[String] {
-        &self.dependencies
+    fn dependencies(&self) -> Vec<String> {
+        self.dependencies.clone()
     }
 
     async fn run(&self, input: Vec<Input<'_, String, Data>>) -> Option<Data> {

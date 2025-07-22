@@ -32,12 +32,12 @@ impl Void {
 }
 
 impl Task<usize, ()> for Void {
-    fn id(&self) -> &usize {
-        &self.id
+    fn id(&self) -> usize {
+        self.id
     }
 
-    fn dependencies(&self) -> &[usize] {
-        &self.dependencies
+    fn dependencies(&self) -> Vec<usize> {
+        self.dependencies.clone()
     }
 
     async fn run(&self, _: Vec<Input<'_, usize, ()>>) -> Option<()> {

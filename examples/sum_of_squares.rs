@@ -69,8 +69,8 @@ impl Square {
 }
 
 impl Task<String, u64> for Square {
-    fn id(&self) -> &String {
-        &self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 
     async fn run(&self, _: Vec<Input<'_, String, u64>>) -> Option<u64> {
@@ -100,12 +100,12 @@ impl Sum {
 }
 
 impl Task<String, u64> for Sum {
-    fn id(&self) -> &String {
-        &self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 
-    fn dependencies(&self) -> &[String] {
-        &self.dependencies
+    fn dependencies(&self) -> Vec<String> {
+        self.dependencies.clone()
     }
 
     async fn run(&self, input: Vec<Input<'_, String, u64>>) -> Option<u64> {

@@ -2,12 +2,12 @@ use futures::future::BoxFuture;
 use futures::future::Shared;
 
 #[trait_variant::make(Send + Sync)]
-#[dynosaur::dynosaur(pub DynTask = dyn(box) Task)]
+#[dynosaur::dynosaur(pub(crate) DynTask = dyn(box) Task)]
 pub trait Task<I, D> {
-    fn id(&self) -> &I;
+    fn id(&self) -> I;
 
-    fn dependencies(&self) -> &[I] {
-        &[]
+    fn dependencies(&self) -> Vec<I> {
+        Vec::new()
     }
 
     async fn run(&self, input: Vec<Input<'_, I, D>>) -> Option<D>;

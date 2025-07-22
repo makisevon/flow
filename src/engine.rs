@@ -127,7 +127,7 @@ where
     where
         T: Task<I, D>,
     {
-        self.exists_task_by_id(task.id())
+        self.exists_task_by_id(&task.id())
     }
 
     pub fn exists_task_by_id(&self, id: &I) -> bool {
@@ -138,7 +138,7 @@ where
     where
         T: Task<I, D>,
     {
-        self.remove_task_by_id(task.id())
+        self.remove_task_by_id(&task.id())
     }
 
     pub fn remove_task_by_id(&self, id: &I) -> &Self {
@@ -149,7 +149,7 @@ where
 
 impl<'a, I, D> EngineBuilder<'a, I, D>
 where
-    I: Clone + Eq + Hash,
+    I: Eq + Hash,
 {
     pub fn add_task<T>(&self, task: T) -> &Self
     where
@@ -158,11 +158,16 @@ where
         self.tasks
             .write()
             .unwrap()
-            .insert(task.id().clone(), DynTask::new_box(task));
+            .insert(task.id(), DynTask::new_box(task));
 
         self
     }
+}
 
+impl<'a, I, D> EngineBuilder<'a, I, D>
+where
+    I: Clone + Eq + Hash,
+{
     pub fn build(self) -> Result<Engine<'a, I, D>, BuildEngineError> {
         let tasks = Arc::into_inner(self.tasks).unwrap().into_inner().unwrap();
         let mut builder = Dag::builder();
@@ -172,7 +177,7 @@ where
         }
 
         for (id, task) in &tasks {
-            for dependency in task.dependencies().iter().cloned() {
+            for dependency in task.dependencies() {
                 builder.add_edge(Edge::new(dependency, id.clone()));
             }
         }

@@ -22,8 +22,8 @@ impl OumaeKumiko {
 }
 
 impl Task<String, Arc<dyn Any + Send + Sync>> for OumaeKumiko {
-    fn id(&self) -> &String {
-        &self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 
     async fn run(

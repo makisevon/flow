@@ -32,12 +32,12 @@ impl DaikichiYama {
 }
 
 impl Task<String, Arc<dyn Any + Send + Sync>> for DaikichiYama {
-    fn id(&self) -> &String {
-        &self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 
-    fn dependencies(&self) -> &[String] {
-        &self.dependencies
+    fn dependencies(&self) -> Vec<String> {
+        self.dependencies.clone()
     }
 
     async fn run(
