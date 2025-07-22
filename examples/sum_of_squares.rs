@@ -8,9 +8,9 @@ use flow::context::Context;
 use flow::engine::Engine;
 use flow::task::Input;
 use flow::task::Task;
+use futures::StreamExt;
 use futures::executor;
 use futures::stream::FuturesUnordered;
-use futures::StreamExt;
 use futures_timer::Delay;
 
 const NUMBERS: &[u64] = &[1, 2, 3];

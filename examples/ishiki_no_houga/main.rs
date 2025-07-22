@@ -3,9 +3,9 @@ use std::time::Instant;
 
 use flow::context::Context;
 use flow::engine::Engine;
+use futures::StreamExt;
 use futures::executor;
 use futures::stream::FuturesUnordered;
-use futures::StreamExt;
 
 mod tasks;
 use tasks::daikichi_yama::DaikichiYama;

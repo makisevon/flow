@@ -4,9 +4,9 @@ use std::hash::Hash;
 use std::sync::Arc;
 use std::sync::RwLock;
 
-use futures::stream::FuturesUnordered;
 use futures::FutureExt;
 use futures::StreamExt;
+use futures::stream::FuturesUnordered;
 
 use crate::context::Context;
 use crate::task::Input;
