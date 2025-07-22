@@ -1,8 +1,8 @@
-use async_trait::async_trait;
 use futures::future::BoxFuture;
 use futures::future::Shared;
 
-#[async_trait]
+#[trait_variant::make(Send + Sync)]
+#[dynosaur::dynosaur(pub DynTask = dyn(box) Task)]
 pub trait Task<I, D> {
     fn id(&self) -> &I;
 

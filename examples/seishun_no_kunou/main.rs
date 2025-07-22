@@ -14,8 +14,8 @@ use tasks::uji_bashi::UjiBashi;
 fn main() {
     let builder = Engine::builder();
     builder
-        .add_task(Box::new(OumaeKumiko::new()))
-        .add_task(Box::new(UjiBashi::new()));
+        .add_task(OumaeKumiko::new())
+        .add_task(UjiBashi::new());
 
     let engine = builder.build().unwrap();
     let context = Context::new();

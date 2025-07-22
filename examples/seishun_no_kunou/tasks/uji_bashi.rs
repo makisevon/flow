@@ -1,7 +1,6 @@
 use std::fmt;
 use std::time::Duration;
 
-use async_trait::async_trait;
 use flow::task::Input;
 use flow::task::Task;
 use futures_timer::Delay;
@@ -28,7 +27,6 @@ impl UjiBashi {
     }
 }
 
-#[async_trait]
 impl Task<String, Data> for UjiBashi {
     fn id(&self) -> &String {
         &self.id

@@ -3,7 +3,6 @@ use std::iter;
 use std::time::Duration;
 use std::time::Instant;
 
-use async_trait::async_trait;
 use flow::context::Context;
 use flow::engine::Engine;
 use flow::task::Input;
@@ -18,9 +17,9 @@ const NUMBERS: &[u64] = &[1, 2, 3];
 fn main() {
     let builder = Engine::builder();
     for &number in NUMBERS {
-        builder.add_task(Box::new(Square::from(number)));
+        builder.add_task(Square::from(number));
     }
-    builder.add_task(Box::new(Sum::from(NUMBERS.into())));
+    builder.add_task(Sum::from(NUMBERS.into()));
 
     let engine = builder.build().unwrap();
     let context = Context::new();
@@ -69,7 +68,6 @@ impl Square {
     }
 }
 
-#[async_trait]
 impl Task<String, u64> for Square {
     fn id(&self) -> &String {
         &self.id
@@ -101,7 +99,6 @@ impl Sum {
     }
 }
 
-#[async_trait]
 impl Task<String, u64> for Sum {
     fn id(&self) -> &String {
         &self.id

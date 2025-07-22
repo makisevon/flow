@@ -1,7 +1,6 @@
 use std::fmt;
 use std::time::Duration;
 
-use async_trait::async_trait;
 use flow::task::Input;
 use flow::task::Task;
 use futures_timer::Delay;
@@ -22,7 +21,6 @@ impl OumaeKumiko {
     }
 }
 
-#[async_trait]
 impl Task<String, Data> for OumaeKumiko {
     fn id(&self) -> &String {
         &self.id

@@ -1,6 +1,5 @@
 use std::error::Error;
 
-use async_trait::async_trait;
 use flow::engine::Engine;
 use flow::task::Input;
 use flow::task::Task;
@@ -8,9 +7,9 @@ use flow::task::Task;
 fn main() {
     let builder = Engine::builder();
     builder
-        .add_task(Box::new(Void::from(1, vec![3])))
-        .add_task(Box::new(Void::from(2, vec![1])))
-        .add_task(Box::new(Void::from(3, vec![2])));
+        .add_task(Void::from(1, vec![3]))
+        .add_task(Void::from(2, vec![1]))
+        .add_task(Void::from(3, vec![2]));
 
     let err = unsafe { builder.build().unwrap_err_unchecked() };
 
@@ -32,7 +31,6 @@ impl Void {
     }
 }
 
-#[async_trait]
 impl Task<usize, ()> for Void {
     fn id(&self) -> &usize {
         &self.id

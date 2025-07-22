@@ -9,6 +9,7 @@ use futures::StreamExt;
 use futures::stream::FuturesUnordered;
 
 use crate::context::Context;
+use crate::task::DynTask;
 use crate::task::Input;
 use crate::task::Task;
 
@@ -19,12 +20,12 @@ use dag::Edge;
 use dag::NodeData;
 
 #[derive(Clone)]
-pub struct Engine<I, D> {
+pub struct Engine<'a, I, D> {
     dag: Dag<I>,
-    tasks: Arc<HashMap<I, Arc<dyn Task<I, D> + Send + Sync>>>,
+    tasks: Arc<HashMap<I, Arc<DynTask<'a, I, D>>>>,
 }
 
-impl<I, D> Engine<I, D> {
+impl<'a, I, D> Engine<'a, I, D> {
     pub fn new() -> Self {
         Self {
             dag: Dag::new(),
@@ -32,23 +33,24 @@ impl<I, D> Engine<I, D> {
         }
     }
 
-    pub fn builder() -> EngineBuilder<I, D> {
+    pub fn builder() -> EngineBuilder<'a, I, D> {
         EngineBuilder::new()
     }
 }
 
-impl<I, D> Default for Engine<I, D> {
+impl<I, D> Default for Engine<'_, I, D> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<'a, I, D> Engine<I, D>
+impl<'a, 'cx, I, D> Engine<'a, I, D>
 where
-    I: Clone + Eq + Hash + Send + 'a,
-    D: Clone + Send + Sync + 'a,
+    'a: 'cx,
+    I: Clone + Eq + Hash + Send + 'cx,
+    D: Clone + Send + Sync + 'cx,
 {
-    pub async fn run(&self, context: Context<'a, I, Option<D>>) {
+    pub async fn run(&self, context: Context<'cx, I, Option<D>>) {
         let graph = self.dag.graph();
         let mut in_degrees: HashMap<_, _> = graph
             .iter()
@@ -97,14 +99,13 @@ where
     }
 }
 
-pub type BoxTask<I, D> = Box<dyn Task<I, D> + Send + Sync>;
-
 #[derive(Clone)]
-pub struct EngineBuilder<I, D> {
-    tasks: Arc<RwLock<HashMap<I, BoxTask<I, D>>>>,
+pub struct EngineBuilder<'a, I, D> {
+    #[allow(clippy::type_complexity)]
+    tasks: Arc<RwLock<HashMap<I, Box<DynTask<'a, I, D>>>>>,
 }
 
-impl<I, D> EngineBuilder<I, D> {
+impl<I, D> EngineBuilder<'_, I, D> {
     pub fn new() -> Self {
         Self {
             tasks: Arc::new(RwLock::new(HashMap::new())),
@@ -112,17 +113,20 @@ impl<I, D> EngineBuilder<I, D> {
     }
 }
 
-impl<I, D> Default for EngineBuilder<I, D> {
+impl<I, D> Default for EngineBuilder<'_, I, D> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<I, D> EngineBuilder<I, D>
+impl<I, D> EngineBuilder<'_, I, D>
 where
     I: Eq + Hash,
 {
-    pub fn exists_task(&self, task: &dyn Task<I, D>) -> bool {
+    pub fn exists_task<T>(&self, task: &T) -> bool
+    where
+        T: Task<I, D>,
+    {
         self.exists_task_by_id(task.id())
     }
 
@@ -130,7 +134,10 @@ where
         self.tasks.read().unwrap().contains_key(id)
     }
 
-    pub fn remove_task(&self, task: &dyn Task<I, D>) -> &Self {
+    pub fn remove_task<T>(&self, task: &T) -> &Self
+    where
+        T: Task<I, D>,
+    {
         self.remove_task_by_id(task.id())
     }
 
@@ -140,16 +147,23 @@ where
     }
 }
 
-impl<I, D> EngineBuilder<I, D>
+impl<'a, I, D> EngineBuilder<'a, I, D>
 where
     I: Clone + Eq + Hash,
 {
-    pub fn add_task(&self, task: BoxTask<I, D>) -> &Self {
-        self.tasks.write().unwrap().insert(task.id().clone(), task);
+    pub fn add_task<T>(&self, task: T) -> &Self
+    where
+        T: Task<I, D> + 'a,
+    {
+        self.tasks
+            .write()
+            .unwrap()
+            .insert(task.id().clone(), DynTask::new_box(task));
+
         self
     }
 
-    pub fn build(self) -> Result<Engine<I, D>, BuildEngineError> {
+    pub fn build(self) -> Result<Engine<'a, I, D>, BuildEngineError> {
         let tasks = Arc::into_inner(self.tasks).unwrap().into_inner().unwrap();
         let mut builder = Dag::builder();
 

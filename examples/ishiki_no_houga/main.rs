@@ -18,9 +18,9 @@ use tasks::oumae_kumiko::OumaeKumiko;
 fn main() {
     let builder = Engine::builder();
     builder
-        .add_task(Box::new(OumaeKumiko::new()))
-        .add_task(Box::new(KousakaReina::new()))
-        .add_task(Box::new(DaikichiYama::new()));
+        .add_task(OumaeKumiko::new())
+        .add_task(KousakaReina::new())
+        .add_task(DaikichiYama::new());
 
     let engine = builder.build().unwrap();
     let context = Context::new();

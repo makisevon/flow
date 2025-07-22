@@ -4,7 +4,6 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::Duration;
 
-use async_trait::async_trait;
 use flow::task::Input;
 use flow::task::Task;
 use futures_timer::Delay;
@@ -32,7 +31,6 @@ impl DaikichiYama {
     }
 }
 
-#[async_trait]
 impl Task<String, Arc<dyn Any + Send + Sync>> for DaikichiYama {
     fn id(&self) -> &String {
         &self.id

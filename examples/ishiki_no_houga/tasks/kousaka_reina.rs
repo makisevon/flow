@@ -3,7 +3,6 @@ use std::fmt;
 use std::sync::Arc;
 use std::time::Duration;
 
-use async_trait::async_trait;
 use flow::task::Input;
 use flow::task::Task;
 use futures_timer::Delay;
@@ -22,7 +21,6 @@ impl KousakaReina {
     }
 }
 
-#[async_trait]
 impl Task<String, Arc<dyn Any + Send + Sync>> for KousakaReina {
     fn id(&self) -> &String {
         &self.id
