@@ -1,6 +1,13 @@
 [package]
 name = "dag-flow"
 version = "0.1.0"
+authors = ["Makise Von <v.makise@foxmail.com>"]
+categories = ["asynchronous"]
+keywords = ["dag", "task", "workflow", "async"]
+description = "DAG Flow is a simple DAG workflow engine."
+documentation = "https://docs.rs/dag-flow"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/makisevon/dag-flow"
 edition = "2024"
 
 [dependencies]
