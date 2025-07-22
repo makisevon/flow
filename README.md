@@ -1,3 +1,3 @@
-# Flow
+# DAG Flow
 
-Flow is a simple DAG workflow engine.
+DAG Flow is a simple DAG workflow engine.
