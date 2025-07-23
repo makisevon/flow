@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fmt;
 use std::time::Duration;
 
@@ -26,7 +27,7 @@ impl Task<String, Data> for OumaeKumiko {
         self.id.clone()
     }
 
-    async fn run(&self, _: Vec<Input<'_, String, Data>>) -> Option<Data> {
+    async fn run(&self, _: HashMap<String, Input<'_, Data>>) -> Option<Data> {
         Delay::new(Duration::from_secs(1)).await;
         Some(Data::OumaeKumiko(Run::new()))
     }

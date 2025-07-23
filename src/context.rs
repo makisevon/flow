@@ -6,9 +6,11 @@ use std::sync::RwLock;
 use futures::future::BoxFuture;
 use futures::future::Shared;
 
+pub type Value<'a, T> = Shared<BoxFuture<'a, T>>;
+
 #[derive(Clone, Debug)]
 pub struct Context<'a, K, V> {
-    context: Arc<RwLock<HashMap<K, Shared<BoxFuture<'a, V>>>>>,
+    context: Arc<RwLock<HashMap<K, Value<'a, V>>>>,
 }
 
 impl<K, V> Context<'_, K, V> {
@@ -29,11 +31,11 @@ impl<'a, K, V> Context<'a, K, V>
 where
     K: Eq + Hash,
 {
-    pub fn get(&self, key: &K) -> Option<Shared<BoxFuture<'a, V>>> {
+    pub fn get(&self, key: &K) -> Option<Value<'a, V>> {
         self.context.read().unwrap().get(key).cloned()
     }
 
-    pub fn set(&self, key: K, value: Shared<BoxFuture<'a, V>>) -> Option<Shared<BoxFuture<'a, V>>> {
+    pub fn set(&self, key: K, value: Value<'a, V>) -> Option<Value<'a, V>> {
         self.context.write().unwrap().insert(key, value)
     }
 }

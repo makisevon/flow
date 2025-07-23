@@ -36,15 +36,10 @@ impl Task<String, Data> for UjiBashi {
         self.dependencies.clone()
     }
 
-    async fn run(&self, input: Vec<Input<'_, String, Data>>) -> Option<Data> {
+    async fn run(&self, inputs: HashMap<String, Input<'_, Data>>) -> Option<Data> {
         Delay::new(Duration::from_secs(1)).await;
 
-        let input: HashMap<_, _> = input
-            .into_iter()
-            .map(|Input { id, data }| (id, data))
-            .collect();
-
-        let _run = input[&OumaeKumiko::id()]
+        let _run = inputs[&OumaeKumiko::id()]
             .clone()
             .await
             .unwrap()

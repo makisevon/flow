@@ -2,11 +2,9 @@ use core::fmt;
 use std::any::Any;
 use std::collections::HashMap;
 use std::sync::Arc;
-use std::time::Duration;
 
 use dag_flow::task::Input;
 use dag_flow::task::Task;
-use futures_timer::Delay;
 
 use super::kousaka_reina::KousakaReina;
 use super::kousaka_reina::Trumpet;
@@ -42,23 +40,16 @@ impl Task<String, Arc<dyn Any + Send + Sync>> for DaikichiYama {
 
     async fn run(
         &self,
-        input: Vec<Input<'_, String, Arc<dyn Any + Send + Sync>>>,
+        inputs: HashMap<String, Input<'_, Arc<dyn Any + Send + Sync>>>,
     ) -> Option<Arc<dyn Any + Send + Sync>> {
-        Delay::new(Duration::from_secs(1)).await;
-
-        let input: HashMap<_, _> = input
-            .into_iter()
-            .map(|Input { id, data }| (id, data))
-            .collect();
-
-        let _euphonium: Arc<Euphonium> = input[&OumaeKumiko::id()]
+        let _euphonium: Arc<Euphonium> = inputs[&OumaeKumiko::id()]
             .clone()
             .await
             .unwrap()
             .downcast()
             .unwrap();
 
-        let _trumpet: Arc<Trumpet> = input[&KousakaReina::id()]
+        let _trumpet: Arc<Trumpet> = inputs[&KousakaReina::id()]
             .clone()
             .await
             .unwrap()

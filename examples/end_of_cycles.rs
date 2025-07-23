@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::error::Error;
 
 use dag_flow::engine::Engine;
@@ -40,7 +41,7 @@ impl Task<usize, ()> for Void {
         self.dependencies.clone()
     }
 
-    async fn run(&self, _: Vec<Input<'_, usize, ()>>) -> Option<()> {
+    async fn run(&self, _: HashMap<usize, Input<'_, ()>>) -> Option<()> {
         None
     }
 }

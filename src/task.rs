@@ -1,5 +1,8 @@
-use futures::future::BoxFuture;
-use futures::future::Shared;
+use std::collections::HashMap;
+
+use crate::context::Value;
+
+pub type Input<'a, T> = Value<'a, Option<T>>;
 
 #[trait_variant::make(Send + Sync)]
 #[dynosaur::dynosaur(pub(crate) DynTask = dyn(box) Task)]
@@ -10,17 +13,9 @@ pub trait Task<I, D> {
         Vec::new()
     }
 
-    async fn run(&self, input: Vec<Input<'_, I, D>>) -> Option<D>;
-}
-
-#[derive(Clone, Debug)]
-pub struct Input<'a, I, D> {
-    pub id: I,
-    pub data: Shared<BoxFuture<'a, Option<D>>>,
-}
-
-impl<'a, I, D> Input<'a, I, D> {
-    pub fn new(id: I, data: Shared<BoxFuture<'a, Option<D>>>) -> Self {
-        Self { id, data }
+    fn is_auto(&self) -> bool {
+        true
     }
+
+    async fn run(&self, inputs: HashMap<I, Input<'_, D>>) -> Option<D>;
 }

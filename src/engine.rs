@@ -10,7 +10,6 @@ use futures::stream::FuturesUnordered;
 
 use crate::context::Context;
 use crate::task::DynTask;
-use crate::task::Input;
 use crate::task::Task;
 
 mod dag;
@@ -64,19 +63,19 @@ where
 
         while let Some(node) = queue.pop_front() {
             if let Some(task) = self.tasks.get(node).cloned() {
-                let input = graph[node]
+                let inputs = graph[node]
                     .in_neighbors
                     .iter()
                     .flat_map(|in_neighbor| {
                         context
                             .get(in_neighbor)
-                            .map(|data| Input::new(in_neighbor.clone(), data))
+                            .map(|data| (in_neighbor.clone(), data))
                     })
                     .collect();
 
                 context.set(
                     node.clone(),
-                    async move { task.run(input).await }.boxed().shared(),
+                    async move { task.run(inputs).await }.boxed().shared(),
                 );
             }
 
@@ -92,7 +91,13 @@ where
 
         graph
             .iter()
-            .flat_map(|(node, _)| context.get(node))
+            .flat_map(|(node, _)| {
+                if self.tasks.get(node)?.is_auto() {
+                    context.get(node)
+                } else {
+                    None
+                }
+            })
             .collect::<FuturesUnordered<_>>()
             .collect::<Vec<_>>()
             .await;

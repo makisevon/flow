@@ -1,4 +1,5 @@
 use std::any::Any;
+use std::collections::HashMap;
 use std::fmt;
 use std::sync::Arc;
 use std::time::Duration;
@@ -26,9 +27,13 @@ impl Task<String, Arc<dyn Any + Send + Sync>> for OumaeKumiko {
         self.id.clone()
     }
 
+    fn is_auto(&self) -> bool {
+        false
+    }
+
     async fn run(
         &self,
-        _: Vec<Input<'_, String, Arc<dyn Any + Send + Sync>>>,
+        _: HashMap<String, Input<'_, Arc<dyn Any + Send + Sync>>>,
     ) -> Option<Arc<dyn Any + Send + Sync>> {
         Delay::new(Duration::from_secs(1)).await;
         Some(Arc::new(Euphonium::new()))

@@ -26,7 +26,10 @@ fn main() {
 
     let now = Instant::now();
     executor::block_on(engine.run(context.clone()));
-    assert_eq!(now.elapsed().as_secs(), 3);
+
+    if let Some(&max) = NUMBERS.iter().max() {
+        assert_eq!(now.elapsed().as_secs(), max);
+    }
 
     let ids: Vec<_> = NUMBERS
         .iter()
@@ -73,7 +76,7 @@ impl Task<String, u64> for Square {
         self.id.clone()
     }
 
-    async fn run(&self, _: Vec<Input<'_, String, u64>>) -> Option<u64> {
+    async fn run(&self, _: HashMap<String, Input<'_, u64>>) -> Option<u64> {
         Delay::new(Duration::from_secs(self.number)).await;
         Some(self.number.pow(2))
     }
@@ -108,40 +111,15 @@ impl Task<String, u64> for Sum {
         self.dependencies.clone()
     }
 
-    async fn run(&self, input: Vec<Input<'_, String, u64>>) -> Option<u64> {
-        let (index_max, max) = self
-            .numbers
-            .iter()
-            .copied()
-            .enumerate()
-            .max_by(|(index_x, x), (index_y, y)| (x, index_y).cmp(&(y, index_x)))
-            .unwrap_or_default();
-
-        let input: HashMap<_, _> = input
-            .into_iter()
-            .map(|Input { id, data }| (id, data))
-            .collect();
-        let dependencies = &self.dependencies;
-
+    async fn run(&self, inputs: HashMap<String, Input<'_, u64>>) -> Option<u64> {
         self.numbers
             .iter()
             .enumerate()
-            .flat_map(|(index, &number)| {
-                if index == index_max {
-                    return None;
-                }
-
-                let data = input[&dependencies[index]].clone();
-                Some(async move {
-                    Delay::new(Duration::from_secs(max - number)).await;
-                    data.await
-                })
-            })
+            .map(|(index, _)| inputs[&self.dependencies[index]].clone())
             .collect::<FuturesUnordered<_>>()
             .collect::<Vec<_>>()
             .await
             .into_iter()
-            .chain(iter::once(input[&dependencies[index_max]].clone().await))
             .sum()
     }
 }
