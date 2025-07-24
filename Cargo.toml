@@ -1,6 +1,6 @@
 [package]
 name = "dag-flow"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Makise Von <v.makise@foxmail.com>"]
 categories = ["asynchronous"]
 keywords = ["async", "dag", "task", "workflow"]
