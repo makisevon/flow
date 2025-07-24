@@ -98,9 +98,9 @@ impl Task<String, Bytes> for C {
 }
 ```
 
-Note that the ouputs of `A` and `B` are passed to `C` as inputs via futures, why is it designed this way?
+Note that the outputs of `A` and `B` are passed to `C` as inputs via futures. Why is it designed this way?
 
-In fact, such a design allows DAG FLow to run all tasks at once, rather than running tasks in layers according to dependency order. Meanwhile, we can `await` dependent inputs anytime within a task, which means we don't have to break down some cohesive tasks for better concurrency. In most cases, such breakdowns make tasks hard to maintain.
+In fact, such a design allows DAG Flow to run all tasks simultaneously, rather than running tasks in layers according to dependency order. Meanwhile, we can `await` dependent inputs at any time within a task, which means we don't have to break down some cohesive tasks for better concurrency. In most cases, such breakdowns make tasks hard to maintain.
 
 After defining these tasks, we can run them through the engine:
 
@@ -146,9 +146,9 @@ The workflow is as follows:
 
 So far, everything is fine. The engine can schedule and run tasks in dependency order. But what if there are weak dependencies? Specifically, in the above example, if we are not concerned with `B`'s output, how can we make `C` weakly dependent on `B` while minimizing the impact on concurrency?
 
-There is obviously a simple solution is to add some code to `B` to check whether it is dependent on `C` in the running workflow. The problem with this solution is that the code added to `B` should logically be added to `C`, and coding like this may make it hard to decouple tasks.
+There is obviously a simple solution: add some code to `B` to check whether it is a dependency of `C` in the running workflow. The problem with this solution is that the code added to `B` should logically belong to `C`, and coding in this way may make it hard to decouple tasks.
 
-Is there a better solution? Let's back to the definition of `C`. `B`'s ouput is passed to `C` via a future, and this future is actually designed to be `B` itself. In other words, we can let `C` rather than the engine drive `B` to starting running.
+Is there a better solution? Let's go back to the definition of `C`. `B`'s output is passed to `C` via a future, and this future is actually designed to be `B` itself. In other words, we can let `C` rather than the engine drive `B` to start running.
 
 To achieve this, we can redefine `B` and `C` as follows:
 
@@ -217,7 +217,7 @@ The workflow is as follows when `C` depends on `B`:
 
 ### How to `dyn` async traits?
 
-For this issue, these crates proviede some procedural macros:
+For this issue, these crates provide some procedural macros:
 
 - [dtolnay/async-trait](https://github.com/dtolnay/async-trait)
 - [spastorino/dynosaur](https://github.com/spastorino/dynosaur)
